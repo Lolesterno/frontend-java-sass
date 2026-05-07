@@ -1,0 +1,106 @@
+'use client'
+
+import { TransactionBadge } from "@/components/payments/TransactionBadge";
+import { apiRequest } from "@/lib/api";
+import { useReverse } from "@/lib/hooks/usePayments";
+import { Transaction } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { use } from "react";
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="flex justify-between py-3 border-b border-gray-50 last:border-0">
+            <span className="text-sm text-gray-500">{label}</span>
+            <span className="text-sm font-medium text-gray-800">{value}</span>
+        </div>
+    )
+}
+
+export default function TransactionDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    const router = useRouter();
+    const reverse = useReverse();
+
+    const { data: tx, isLoading } = useQuery({
+        queryKey: ['transaction', id],
+        queryFn: async () => {
+            const txs = await apiRequest<Transaction[]>('/payments/transactions')
+            return txs.find(t => t.id === id) ?? null
+        },
+    });
+
+    if (isLoading) {
+        return <p className="text-sm text-gray-400 p-6">Cargando...</p>
+    }
+
+    if (!tx) {
+        return (
+            <div className="text-center py-12">
+                <p className="text-gray-400 mb-4">Transacción no encontrada</p>
+                <button onClick={() => router.back()}
+                    className="text-indigo-500 text-sm hover:underline bg-transparent border-none cursor-pointer">
+                    ← Volver
+                </button>
+            </div>
+        )
+    }
+
+    async function handleReverse() {
+        await reverse.mutateAsync(id);
+        router.push('/dashboard/payments');
+    }
+
+    return (
+        <div>
+            <div className="flex items-center gap-3 mb-6">
+                <button onClick={() => router.back()}
+                    className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer text-sm">
+                    ←
+                </button>
+                <h1 className="text-xl font-medium">Detalle de transacción</h1>
+            </div>
+
+            <div className="max-w-lg bg-white border border-gray-200 rounded-xl overflow-hidden">
+                {/* Header */}
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p className="text-2xl font-medium">
+                            {new Intl.NumberFormat('es-CO', {
+                                style: 'currency', currency: tx.currency, minimumFractionDigits: 0
+                            }).format(tx.amount)}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-0.5">{tx.description}</p>
+                    </div>
+                    <TransactionBadge status={tx.status} />
+                </div>
+
+                {/* Detalles */}
+                <div className="px-6 py-2">
+                    <DetailRow label="ID" value={tx.id} />
+                    <DetailRow label="Tarjeta" value={`${tx.cardBrand} ···· ${tx.cardLastFour}`} />
+                    <DetailRow label="Moneda" value={tx.currency} />
+                    <DetailRow label="Código de respuesta" value={tx.responseCode} />
+                    <DetailRow label="Mensaje" value={tx.responseMessage} />
+                    <DetailRow
+                        label="Fecha"
+                        value={new Date(tx.createdAt).toLocaleString('es-CO')}
+                    />
+                </div>
+
+                {/* Acciones */}
+                {tx.status === 'APPROVED' && (
+                    <div className="px-6 py-4 border-t border-gray-100">
+                        <button
+                            onClick={handleReverse}
+                            disabled={reverse.isPending}
+                            className="w-full border border-red-200 text-red-500 hover:bg-red-50 disabled:opacity-60 font-medium py-2 rounded-lg text-sm cursor-pointer transition-colors bg-transparent"
+                        >
+                            {reverse.isPending ? 'Reversando...' : 'Reversar transacción'}
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
