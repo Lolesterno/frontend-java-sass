@@ -1,13 +1,16 @@
 'use client'
 
 import { useAppStore } from '@/store/useAppStore';
-import { DollarSign, House, KeyRoundIcon, Receipt, Settings, User } from 'lucide-react'
+import { CalendarDays, Car, DollarSign, House, KeyRoundIcon, Receipt, Settings, User, User2Icon } from 'lucide-react'
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
     { href: '/dashboard', label: 'Overview', icon: <House /> },
+    { href: '/dashboard/fleet', label: 'Flota', icon: <Car /> },
+    { href: '/dashboard/bookings', label: 'Reservas', icon: <CalendarDays /> },
+    { href: '/dashboard/customers', label: 'Clientes', icon: <User2Icon /> },
     { href: '/dashboard/apikeys', label: 'API Keys', icon: <KeyRoundIcon /> },
     { href: '/dashboard/payments', label: 'Pagos', icon: <DollarSign /> },
     { href: '/dashboard/billing', label: 'Billing', icon: <Receipt /> },

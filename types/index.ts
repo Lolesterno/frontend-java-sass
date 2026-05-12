@@ -99,3 +99,95 @@ export interface Transaction {
     description: string;
     createdAt: string;
 }
+
+export type VehicleStatus = 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'INACTIVE';
+export type VehicleType = 'CAR' | 'MOTORCYCLE' | 'TRUCK' | 'VAN' | 'BUS' | 'BICYCLE' | 'SCOOTER' | 'OTHER';
+export type RateType = 'HOURLY' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'REJECTED';
+export type BookingSource = 'DASHBOARD' | 'PORTAL';
+
+export interface Vehicle {
+    id: string;
+    type: VehicleType;
+    brand: string;
+    model: string;
+    year: number;
+    plate: string;
+    color: string | null;
+    vin: string | null;
+    seats: number | null;
+    transmission: string;
+    fuelType: string;
+    dailyRate: number | null;
+    hourlyRate: number | null;
+    weeklyRate: number | null;
+    monthlyRate: number | null;
+    status: VehicleStatus;
+    description: string | null;
+    images: string[];
+    features: string[];
+    createdAt: string;
+}
+
+export interface VehiclePrice {
+    id: string;
+    rateType: string;
+    amount: number;
+    currency: string;
+}
+
+export interface PricingSeason {
+    id: string;
+    name: string;
+    startDate: string;
+    endDate: string;
+    multiplier: number;
+    active: boolean;
+}
+
+export interface Customer {
+    id: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    documentType: string;
+    documentNumber: string;
+    licenseNumber: string | null;
+    licenseExpiry: string | null;
+    licenseVerified: boolean;
+    address: string | null;
+    notes: string | null;
+    active: boolean;
+    createdAt: string;
+}
+
+export interface Booking {
+    id: string;
+    vehicleId: string;
+    customerId: string;
+    status: BookingStatus;
+    startDate: string;
+    endDate: string;
+    pickupLocation: string | null;
+    returnLocation: string | null;
+    rateType: string;
+    rateAmount: number;
+    totalAmount: number;
+    currency: string;
+    depositAmount: number;
+    notes: string | null;
+    internalNotes: string | null;
+    source: BookingSource;
+    paymentStatus: string;
+    transactionId: string | null;
+    createdAt: string;
+}
+
+export interface AvailabilityResponse {
+    vehicleId: string;
+    available: boolean;
+    reason: string | null;
+    nextAvailableFrom: string | null;
+}
