@@ -21,13 +21,13 @@ export default function PaymentsPage() {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-6">
+            {/* <div className="flex items-center justify-between mb-6">
                 <h1 className="text-xl font-medium">Pagos</h1>
                 <Link href="/dashboard/payments/new"
                     className="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors no-underline">
                     + Nuevo cobro
                 </Link>
-            </div>
+            </div> */}
 
             {/* Métricas */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">

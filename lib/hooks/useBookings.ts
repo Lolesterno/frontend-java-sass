@@ -45,7 +45,7 @@ export function useCreateBooking() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: Partial<Booking>) => 
-            apiRequest<Booking>('/bookings', { method: 'POST', body: JSON.stringify(data) }),
+            apiRequest<Booking>('/bookings/', { method: 'POST', body: JSON.stringify(data) }),
         onSuccess: () => qc.invalidateQueries({ queryKey: ['bookings'] })
     })
 }
@@ -65,5 +65,24 @@ export function useCheckAvailability() {
             apiRequest<AvailabilityResponse>('/bookings/availability', {
                 method: 'POST', body: JSON.stringify(data)
             }),
+    })
+}
+
+export function useUpdateBookingPayment() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, transactionId, paymentStatus }: {
+            id: string;
+            transactionId: string;
+            paymentStatus: string;
+        }) => apiRequest<Booking>(`/bookings/${id}/payment`, {
+            method: 'PATCH',
+            body: JSON.stringify({ transactionId, paymentStatus })
+        }),
+        onSuccess: (_, { id }) => {
+            qc.invalidateQueries({ queryKey: ['bookings'] })
+            qc.invalidateQueries({ queryKey: ['booking', id] })
+            qc.invalidateQueries({ queryKey: ['transactions'] })
+        }
     })
 }

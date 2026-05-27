@@ -1,51 +1,71 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../api";
-import { CardToken, Transaction } from "@/types";
+import { GatewayConfig, PaymentIntentResponse, Transaction } from "@/types";
 
 export function useTransactions() {
     return useQuery({
         queryKey: ['transactions'],
-        queryFn: () => apiRequest<Transaction[]>('/payments/transactions')
+        queryFn: () => apiRequest<Transaction[]>('/payments/transactions'),
     })
 }
 
-export function useTokenize() {
+export function useGatewayConfig() {
+    return useQuery({
+        queryKey: ['gateway-config'],
+        queryFn: () => apiRequest<GatewayConfig>('/payments/config')
+    })
+}
+
+export function useConfigureGateway() {
+    const qc = useQueryClient();
     return useMutation({
         mutationFn: (data: {
-            cardNumber: string
-            expiryMonth: string
-            expiryYear: string
-            cvv: string
-            cardHolder: string
-        }) => apiRequest<CardToken>('/payments/tokenize', {
+            gatewayType: string;
+            secretKey: string;
+            publicKey: string;
+            webhookSecret?: string
+            mode: string;
+        }) =>  apiRequest<GatewayConfig>('/payments/config', {
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         }),
+        onSuccess: () => qc.invalidateQueries({ queryKey: ['gateway-config'] }),
     })
 }
 
-export function useCharge(){
-    const queryClient = useQueryClient();
+export function useCreatePaymentIntent() {
     return useMutation({
         mutationFn: (data: {
-            cardToken: string
-            amount: number
-            currency: string
-            description: string
-            idempotencyKey?: string
-        }) => apiRequest<Transaction>('/payments/charge', {
+            amount: number;
+            currency: string;
+            description: string;
+            bookingId?: string;
+            idempotencyKey?: string;
+        }) => apiRequest<PaymentIntentResponse>('/payments/intent', {
             method: 'POST',
-            body: JSON.stringify(data)
-        }),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['transactions'] }),
+            body: JSON.stringify(data),
+        })
     })
 }
 
-export function useReverse() {
-    const queryClient = useQueryClient();
+export function useConfirmPayment() {
+    const qc = useQueryClient();
     return useMutation({
-        mutationFn: (transactionId: string) =>
-            apiRequest(`/payments/reverse/${transactionId}`, { method: 'POST' }),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        mutationFn: (paymentIntentId: string) =>
+            apiRequest<Transaction>(`/payments/confirm/${paymentIntentId}`, {
+                method: 'POST',
+            }),
+            onSuccess: () => qc.invalidateQueries({ queryKey: ['transactions'] })
+    })
+}
+
+export function useRefundPayment() {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: (paymentIntentId: string) =>
+            apiRequest<Transaction>(`/payments/refund/${paymentIntentId}`, {
+                method: 'POST'
+            }),
+        onSuccess: () => qc.invalidateQueries({ queryKey: ['transactions'] })
     })
 }

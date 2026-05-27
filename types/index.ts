@@ -191,3 +191,77 @@ export interface AvailabilityResponse {
     reason: string | null;
     nextAvailableFrom: string | null;
 }
+
+export interface MeetRoom {
+    id: string;
+    name: string;
+    hostname: string;
+    status: string;
+    startedAt: string;
+    endedAt: string | null;
+    participantCount: number;
+}
+
+export interface ChatMessage {
+    id: string;
+    senderName: string;
+    message: string;
+    sendAt: string;
+}
+
+export interface Participant {
+    sessionId: string;
+    name: string;
+    stream: MediaStream | null;
+    audioMuted: boolean;
+    videoMuted: boolean;
+}
+
+export interface ChatMsg {
+    senderId: string;
+    senderName: string;
+    message: string;
+    timestamp: number;
+    isLocal?: boolean;
+}
+
+export interface WaitingParticipant {
+    sessionId: string;
+    name: string;
+}
+
+type MessageType =
+    | 'JOIN_ROOM' | 'ROOM_STATE' | 'PARTICIPANT_JOINED' | 'PARTICIPANT_LEFT' | 'ROOM_CLOSED'
+    | 'WAITING' | 'ADMIT' | 'REJECT' | 'KNOCK'
+    | 'OFFER' | 'ANSWER' | 'ICE_CANDIDATE'
+    | 'CHAT_MESSAGE' | 'MUTE_AUDIO' | 'UNMUTE_AUDIO' | 'MUTE_VIDEO' | 'UNMUTE_VIDEO'
+    | 'ERROR'
+
+export interface MeetMessage {
+    type: MessageType;
+    roomId?: string;
+    senderId?: string;
+    senderName?: string;
+    targetId?: string;
+    tenantId?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payload?: any;
+    message?: string;
+    timestamp?: number;
+}
+
+export interface PaymentIntentResponse {
+    paymentIntentId: string;
+    clientSecret: string;
+    status: string;
+    amount: number;
+    currency: string;
+}
+
+export interface GatewayConfig {
+    gatewayType: string;
+    publicKey: string;
+    mode: string;
+    active: boolean;
+    configured: boolean;
+}

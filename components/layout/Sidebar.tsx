@@ -1,7 +1,7 @@
 'use client'
 
 import { useAppStore } from '@/store/useAppStore';
-import { CalendarDays, Car, DollarSign, House, KeyRoundIcon, Receipt, Settings, User, User2Icon } from 'lucide-react'
+import { CalendarDays, Camera, Car, CreditCard, DollarSign, House, KeyRoundIcon, Receipt, Settings, User, User2Icon } from 'lucide-react'
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,6 +16,8 @@ const NAV_ITEMS = [
     { href: '/dashboard/billing', label: 'Billing', icon: <Receipt /> },
     { href: '/dashboard/members', label: 'Miembros', icon: <User /> },
     { href: '/dashboard/settings', label: 'Configuración', icon: <Settings /> },
+    { href: '/dashboard/settings/payments', label: 'Pagos', icon: <CreditCard /> },
+    { href: '/dashboard/meet', label: 'Reuniones', icon: <Camera /> },
 ];
 
 export function Sidebar() {
