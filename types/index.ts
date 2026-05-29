@@ -57,7 +57,8 @@ export interface Subscription {
     status: string;
     currentPeriodStart: string;
     currentPeriodEnd: string;
-    cancelAtPeriodEnd: string;
+    stripeCustomerId: string | null
+    stripePaymentIntentId: string | null
 }
 
 export interface Usage {
@@ -264,4 +265,40 @@ export interface GatewayConfig {
     mode: string;
     active: boolean;
     configured: boolean;
+}
+
+export interface AdminUser {
+    id: string;
+    name: string;
+    email: string;
+    role: 'SUPER_ADMIN' | 'ADMIN';
+    active: boolean;
+}
+
+export interface AdminLoginResponse {
+    accessToken: string;
+    refreshToken: string;
+    adminId: string;
+    name: string;
+    email: string;
+    role: string;
+}
+
+export interface TenantAdmin {
+    id: string;
+    name: string;
+    slug: string;
+    plan: string;
+    active: boolean;
+    ownerId: string;
+    createdAt: string;
+}
+
+export interface AdminMetrics {
+    totalTenants: number;
+    activeTenants: number;
+    totalRevenueMtd: number;
+    newTenantsThisWeek: number;
+    planDistribution: Record<string, number>;
+    mrr: number;
 }
